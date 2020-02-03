@@ -1,15 +1,30 @@
 import 'package:flutter/widgets.dart';
 
 class MainViewModel extends ChangeNotifier {
-  BuildContext _context;
+  List<ToDoItem> items = [];
 
-  MainViewModel({@required BuildContext context})
-  : _context = context;
+  MainViewModel({@required BuildContext context});
 
-  List<String> items = [];
-
-  void addItem(String text) {
-    items.add(text);
-    notifyListeners();
+//   ignore: missing_return
+  void Function() addItem(String text) {
+    if (text.isNotEmpty) {
+      items.add(ToDoItem(name: text, isSelected: false));
+      notifyListeners();
+    }
   }
+
+  // ignore: missing_return
+  void Function() deleteLastItem() {
+    if (items.length > 0) {
+      items.removeLast();
+      notifyListeners();
+    }
+  }
+}
+
+class ToDoItem {
+  ToDoItem({this.name, this.isSelected});
+
+  String name = "";
+  bool isSelected = false;
 }
