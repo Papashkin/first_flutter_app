@@ -20,26 +20,19 @@ class _MainViewState extends State<MainView> {
   final String hint = "print text here";
   final bool obscureText = false;
 
-  List<ToDoItem> _items = [];
-  MainViewModel viewModel = MainViewModel();
+  String _text = "";
 
   @override
   void initState() {
     _controller.addListener(() {
-      var text = _controller.text;
-      viewModel.setText(text);
+      _text = _controller.text;
       _controller.value = _controller.value.copyWith(
-        text: text,
+        text: _text,
         selection:
-            TextSelection(baseOffset: text.length, extentOffset: text.length),
+            TextSelection(baseOffset: _text.length, extentOffset: _text.length),
       );
     });
-    viewModel.toDoItems.listen(setToDoItems);
     super.initState();
-  }
-
-  void setToDoItems(List<ToDoItem> event) {
-    this._items = event;
   }
 
   @override
@@ -51,14 +44,14 @@ class _MainViewState extends State<MainView> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<MainViewModel>.value(
-      value: viewModel,
+      value: MainViewModel(),
       child: Consumer<MainViewModel>(
-        builder: (context, model, child) => getScaffold()
+        builder: (context, model, child) => getScaffold(model)
       ),
     );
   }
 
-  Widget getScaffold() {
+  Widget getScaffold(MainViewModel viewModel) {
     _controller.text = "";
     return Scaffold(
       backgroundColor: Colors.grey[700],
@@ -71,12 +64,12 @@ class _MainViewState extends State<MainView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              addItemButton(),
-              deleteLastButton(),
+              addItemButton(viewModel),
+              deleteLastButton(viewModel),
             ],
           ),
           Divider(height: 10.0, color: Colors.yellow),
-          itemsList(),
+          itemsList(viewModel),
         ],
       ),
     );
@@ -105,7 +98,7 @@ class _MainViewState extends State<MainView> {
     );
   }
 
-  Widget addItemButton() {
+  Widget addItemButton(MainViewModel viewModel) {
     return Expanded(
       flex: 2,
       child: Padding(
@@ -113,7 +106,7 @@ class _MainViewState extends State<MainView> {
         EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
         child: MaterialButton(
           padding: EdgeInsets.symmetric(vertical: 12.0),
-          onPressed: () => viewModel.addItem(),
+          onPressed: () => viewModel.addItem(_text),
           child: Text('Add', style: textStyle),
           color: Colors.green[500],
         ),
@@ -121,7 +114,7 @@ class _MainViewState extends State<MainView> {
     );
   }
 
-  Widget deleteLastButton() {
+  Widget deleteLastButton(MainViewModel viewModel) {
     return Expanded(
       flex: 2,
       child: Padding(
@@ -137,14 +130,14 @@ class _MainViewState extends State<MainView> {
     );
   }
 
-  Widget itemsList() {
+  Widget itemsList(MainViewModel viewModel) {
     return Expanded(
       child: ListView.builder(
         padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
         itemBuilder: (context, position) {
-          return ItemCard(item: _items.elementAt(position), model: viewModel);
+          return ItemCard(item: viewModel.items.elementAt(position), model: viewModel);
         },
-        itemCount: _items.length,
+        itemCount: viewModel.items.length,
         physics: ScrollPhysics(),
       ),
     );

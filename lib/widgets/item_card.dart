@@ -7,7 +7,8 @@ class ItemCard extends StatelessWidget {
   ToDoItem item;
   MainViewModel model;
 
-  ItemCard({Key key, @required this.item, @required this.model}) : super(key: key);
+  ItemCard({Key key, @required this.item, @required this.model})
+      : super(key: key);
 
   final TextStyle largeItalicSize = const TextStyle(
     fontSize: 18.0,
@@ -36,10 +37,9 @@ class ItemCard extends StatelessWidget {
                       EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
                   child: Checkbox(
                     activeColor: Colors.yellow,
+                    checkColor: Colors.grey[500],
                     value: item.isSelected,
-                    onChanged: (bool newValue) {
-                      model.setSelected(newValue, item.id);
-                    },
+                    onChanged: (bool newValue) => model.setSelected(newValue, item.id),
                   ))),
         ],
       ),

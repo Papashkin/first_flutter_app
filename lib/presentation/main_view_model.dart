@@ -1,39 +1,27 @@
-import 'dart:async';
 import 'package:flutter/widgets.dart';
 
 
 class MainViewModel extends ChangeNotifier {
-  List<ToDoItem> _items = [];
-  String _text = "";
-  StreamController _itemsController = StreamController<List<ToDoItem>>();
+  List<ToDoItem> items = [];
 
-  void addItem() {
-    if (_text.isNotEmpty) {
-      _items.add(ToDoItem(name: _text, isSelected: false, id: _items.length + 1));
-      _itemsController.add(_items);
-      _text = "";
+  void addItem(String text) {
+    if (text.isNotEmpty) {
+      items.add(ToDoItem(name: text, isSelected: false, id: items.length + 1));
       notifyListeners();
     }
   }
 
   void deleteLastItem() {
-    if (_items.isNotEmpty) {
-      _items.removeLast();
-      _itemsController.add(_items);
+    if (items.isNotEmpty) {
+      items.removeLast();
       notifyListeners();
     }
   }
 
-  void setText(String text) {
-    this._text = text;
-  }
-
   void setSelected(bool isSelected, int id) {
-    _items.firstWhere((test) => test.id == id).isSelected = isSelected;
+    items.firstWhere((test) => test.id == id).isSelected = isSelected;
     notifyListeners();
   }
-
-  Stream<List<ToDoItem>> get toDoItems => _itemsController.stream;
 
 }
 
