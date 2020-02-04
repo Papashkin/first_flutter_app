@@ -9,7 +9,7 @@ class MainViewModel extends ChangeNotifier {
 
   void addItem() {
     if (_text.isNotEmpty) {
-      _items.add(ToDoItem(name: _text, isSelected: false));
+      _items.add(ToDoItem(name: _text, isSelected: false, id: _items.length + 1));
       _itemsController.add(_items);
       _text = "";
       notifyListeners();
@@ -28,13 +28,19 @@ class MainViewModel extends ChangeNotifier {
     this._text = text;
   }
 
+  void setSelected(bool isSelected, int id) {
+    _items.firstWhere((test) => test.id == id).isSelected = isSelected;
+    notifyListeners();
+  }
+
   Stream<List<ToDoItem>> get toDoItems => _itemsController.stream;
 
 }
 
 class ToDoItem {
-  ToDoItem({this.name, this.isSelected});
+  ToDoItem({@required this.id, this.name, this.isSelected});
 
-  String name = "";
+  String name;
+  int id;
   bool isSelected = false;
 }

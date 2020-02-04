@@ -5,24 +5,42 @@ import 'package:flutter/widgets.dart';
 // ignore: must_be_immutable
 class ItemCard extends StatelessWidget {
   ToDoItem item;
+  MainViewModel model;
 
-  ItemCard({Key key, this.item}) : super(key: key);
+  ItemCard({Key key, @required this.item, @required this.model}) : super(key: key);
 
   final TextStyle largeItalicSize = const TextStyle(
-    fontSize: 16.0,
+    fontSize: 18.0,
+    letterSpacing: 1.1,
+    fontWeight: FontWeight.bold,
     fontFamily: 'Muli',
-    color: Colors.black,
+    color: Colors.yellow,
   );
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.grey[500],
       child: Row(
         children: <Widget>[
-          Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
-              child: Text(item.name, style: largeItalicSize)
-          ),
+          Expanded(
+              flex: 4,
+              child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 14.0, horizontal: 10.0),
+                  child: Text(item.name, style: largeItalicSize))),
+          Expanded(
+              flex: 1,
+              child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
+                  child: Checkbox(
+                    activeColor: Colors.yellow,
+                    value: item.isSelected,
+                    onChanged: (bool newValue) {
+                      model.setSelected(newValue, item.id);
+                    },
+                  ))),
         ],
       ),
     );

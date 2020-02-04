@@ -19,7 +19,6 @@ class _MainViewState extends State<MainView> {
   final textStyle = TextStyle(color: Colors.white, fontSize: 16.0);
   final String hint = "print text here";
   final bool obscureText = false;
-  final int position = 0;
 
   List<ToDoItem> _items = [];
   MainViewModel viewModel = MainViewModel();
@@ -39,6 +38,10 @@ class _MainViewState extends State<MainView> {
     super.initState();
   }
 
+  void setToDoItems(List<ToDoItem> event) {
+    this._items = event;
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -50,62 +53,30 @@ class _MainViewState extends State<MainView> {
     return ChangeNotifierProvider<MainViewModel>.value(
       value: viewModel,
       child: Consumer<MainViewModel>(
-        builder: (context, model, child) => getScaffold(model)
+        builder: (context, model, child) => getScaffold()
       ),
     );
   }
 
-  Widget getScaffold(MainViewModel model) {
+  Widget getScaffold() {
     _controller.text = "";
     return Scaffold(
-      appBar: appBar('First MVVM app'),
+      backgroundColor: Colors.grey[700],
+      appBar: appBar('To-Do Flutter app'),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          getEditText(obscureText, hint, _controller),
+          getEditText(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
-                  child: MaterialButton(
-                    padding: EdgeInsets.symmetric(vertical: 12.0),
-                    onPressed: () => model.addItem(),
-                    child: Text('Add', style: textStyle),
-                    color: Colors.green[500],
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
-                  child: MaterialButton(
-                    padding: EdgeInsets.symmetric(vertical: 12.0),
-                    onPressed: () => model.deleteLastItem(),
-                    child: Text('Delete last', style: textStyle),
-                    color: Colors.red[500],
-                  ),
-                ),
-              ),
+              addItemButton(),
+              deleteLastButton(),
             ],
           ),
-          Container(child: Divider(height: 10.0, color: Colors.blue[300])),
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-              itemBuilder: (context, position) {
-                return ItemCard(item: _items.elementAt(position));
-              },
-              itemCount: _items.length,
-              physics: ScrollPhysics(),
-            ),
-          )
+          Divider(height: 10.0, color: Colors.yellow),
+          itemsList(),
         ],
       ),
     );
@@ -114,28 +85,68 @@ class _MainViewState extends State<MainView> {
   Widget appBar(String title) {
     return AppBar(
       title: Text(title),
-      backgroundColor: Colors.blue[700],
-      elevation: 1.0,
+      backgroundColor: Colors.black,
+      elevation: 2.0,
     );
   }
 
-  Widget getEditText(
-      bool obscureText, String hint, TextEditingController controller) {
+  Widget getEditText() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-          border: Border.all(width: 1, color: Colors.blue[300]),
+          border: Border.all(width: 1, color: Colors.yellow[400]),
           color: Colors.white,
           borderRadius: BorderRadius.circular(8.0)),
       child: TextField(
           obscureText: obscureText,
           decoration: InputDecoration.collapsed(hintText: hint),
-          controller: controller),
+          controller: _controller),
     );
   }
 
-  void setToDoItems(List<ToDoItem> event) {
-    this._items = event;
+  Widget addItemButton() {
+    return Expanded(
+      flex: 2,
+      child: Padding(
+        padding:
+        EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
+        child: MaterialButton(
+          padding: EdgeInsets.symmetric(vertical: 12.0),
+          onPressed: () => viewModel.addItem(),
+          child: Text('Add', style: textStyle),
+          color: Colors.green[500],
+        ),
+      ),
+    );
+  }
+
+  Widget deleteLastButton() {
+    return Expanded(
+      flex: 2,
+      child: Padding(
+        padding:
+        EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
+        child: MaterialButton(
+          padding: EdgeInsets.symmetric(vertical: 12.0),
+          onPressed: () => viewModel.deleteLastItem(),
+          child: Text('Delete last', style: textStyle),
+          color: Colors.red[500],
+        ),
+      ),
+    );
+  }
+
+  Widget itemsList() {
+    return Expanded(
+      child: ListView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+        itemBuilder: (context, position) {
+          return ItemCard(item: _items.elementAt(position), model: viewModel);
+        },
+        itemCount: _items.length,
+        physics: ScrollPhysics(),
+      ),
+    );
   }
 }
