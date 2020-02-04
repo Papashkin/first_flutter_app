@@ -1,4 +1,4 @@
-import 'package:first_flutter_app/main_view_model.dart';
+import 'package:first_flutter_app/presentation/main_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -21,7 +21,8 @@ class ItemCard extends StatelessWidget {
         children: <Widget>[
           Padding(
               padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
-              child: Text(item.name, style: largeItalicSize)),
+              child: Text(item.name, style: largeItalicSize)
+          ),
         ],
       ),
     );

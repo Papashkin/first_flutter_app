@@ -1,4 +1,4 @@
-import 'package:first_flutter_app/main_view_model.dart';
+import 'package:first_flutter_app/presentation/main_view_model.dart';
 import 'package:first_flutter_app/widgets/item_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,28 +14,28 @@ class MainView extends StatefulWidget {
 class _MainViewState extends State<MainView> {
   final _controller = TextEditingController();
   final TextStyle largeItalicSize = const TextStyle(
-    fontSize: 16.0,
-    fontFamily: 'Muli',
-    color: Colors.black,
+    fontSize: 16.0, fontFamily: 'Muli', color: Colors.black
   );
   final textStyle = TextStyle(color: Colors.white, fontSize: 16.0);
   final String hint = "print text here";
   final bool obscureText = false;
-
   final int position = 0;
-  final List<String> items = [];
-  String text = "";
+
+  List<ToDoItem> _items = [];
+  MainViewModel viewModel = MainViewModel();
 
   @override
   void initState() {
     _controller.addListener(() {
-      this.text = _controller.text.toLowerCase();
+      var text = _controller.text;
+      viewModel.setText(text);
       _controller.value = _controller.value.copyWith(
         text: text,
         selection:
             TextSelection(baseOffset: text.length, extentOffset: text.length),
       );
     });
+    viewModel.toDoItems.listen(setToDoItems);
     super.initState();
   }
 
@@ -48,9 +48,9 @@ class _MainViewState extends State<MainView> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<MainViewModel>.value(
-      value: MainViewModel(context: context),
+      value: viewModel,
       child: Consumer<MainViewModel>(
-        builder: (context, model, child) => getScaffold(model),
+        builder: (context, model, child) => getScaffold(model)
       ),
     );
   }
@@ -74,7 +74,7 @@ class _MainViewState extends State<MainView> {
                       EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
                   child: MaterialButton(
                     padding: EdgeInsets.symmetric(vertical: 12.0),
-                    onPressed: () => model.addItem(text),
+                    onPressed: () => model.addItem(),
                     child: Text('Add', style: textStyle),
                     color: Colors.green[500],
                   ),
@@ -100,9 +100,9 @@ class _MainViewState extends State<MainView> {
             child: ListView.builder(
               padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
               itemBuilder: (context, position) {
-                return ItemCard(item: model.items.elementAt(position));
+                return ItemCard(item: _items.elementAt(position));
               },
-              itemCount: model.items.length,
+              itemCount: _items.length,
               physics: ScrollPhysics(),
             ),
           )
@@ -133,5 +133,9 @@ class _MainViewState extends State<MainView> {
           decoration: InputDecoration.collapsed(hintText: hint),
           controller: controller),
     );
+  }
+
+  void setToDoItems(List<ToDoItem> event) {
+    this._items = event;
   }
 }
