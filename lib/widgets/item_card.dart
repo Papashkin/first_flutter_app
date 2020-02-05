@@ -1,3 +1,4 @@
+import 'package:first_flutter_app/models/to_do_item.dart';
 import 'package:first_flutter_app/presentation/main_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';

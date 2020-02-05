@@ -13,12 +13,12 @@ class MainView extends StatefulWidget {
 
 class _MainViewState extends State<MainView> {
   final _controller = TextEditingController();
-  final TextStyle largeItalicSize = const TextStyle(
-    fontSize: 16.0, fontFamily: 'Muli', color: Colors.black
-  );
-  final textStyle = TextStyle(color: Colors.white, fontSize: 16.0);
+  final TextStyle largeItalicSize =
+      const TextStyle(fontSize: 16.0, fontFamily: 'Muli', color: Colors.black);
+  final mainTextStyle = TextStyle(color: Colors.white, fontSize: 16.0);
   final String hint = "print text here";
   final bool obscureText = false;
+  final MainViewModel viewModel = MainViewModel();
 
   String _text = "";
 
@@ -32,22 +32,23 @@ class _MainViewState extends State<MainView> {
             TextSelection(baseOffset: _text.length, extentOffset: _text.length),
       );
     });
+    viewModel.init();
     super.initState();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    viewModel.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<MainViewModel>.value(
-      value: MainViewModel(),
+      value: viewModel,
       child: Consumer<MainViewModel>(
-        builder: (context, model, child) => getScaffold(model)
-      ),
+          builder: (context, model, child) => getScaffold(model)),
     );
   }
 
@@ -69,7 +70,23 @@ class _MainViewState extends State<MainView> {
             ],
           ),
           Divider(height: 10.0, color: Colors.yellow),
-          itemsList(viewModel),
+          viewModel.state.items.length > 0
+              ? itemsList(viewModel)
+              : Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 80.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                              Icon(Icons.cloud_queue, color: Colors.yellow),
+                              Padding(padding: EdgeInsets.only(top: 20.0)),
+                              Text('There are no items in the list :(',
+                                  style: mainTextStyle)
+                        ],
+                      ),
+                    ),
+                ),
         ],
       ),
     );
@@ -102,13 +119,12 @@ class _MainViewState extends State<MainView> {
     return Expanded(
       flex: 2,
       child: Padding(
-        padding:
-        EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+        padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
         child: MaterialButton(
-          padding: EdgeInsets.symmetric(vertical: 8.0),
-          onPressed: () => viewModel.addItem(_text),
-          child: Text('Add', style: textStyle),
-          color: Colors.green[500]),
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            onPressed: () => viewModel.addItem(_text),
+            child: Text('Add', style: mainTextStyle),
+            color: Colors.green[500]),
       ),
     );
   }
@@ -117,13 +133,12 @@ class _MainViewState extends State<MainView> {
     return Expanded(
       flex: 2,
       child: Padding(
-        padding:
-        EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+        padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
         child: MaterialButton(
-          padding: EdgeInsets.symmetric(vertical: 8.0),
-          onPressed: () => viewModel.deleteLastItem(),
-          child: Text('Delete last', style: textStyle),
-          color: Colors.red[500]),
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            onPressed: () => viewModel.deleteLastItem(),
+            child: Text('Delete last', style: mainTextStyle),
+            color: Colors.red[500]),
       ),
     );
   }
@@ -133,7 +148,9 @@ class _MainViewState extends State<MainView> {
       child: ListView.builder(
         padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
         itemBuilder: (context, position) {
-          return ItemCard(item: viewModel.state.items.elementAt(position), model: viewModel);
+          return ItemCard(
+              item: viewModel.state.items.elementAt(position),
+              model: viewModel);
         },
         itemCount: viewModel.state.items.length,
         physics: ScrollPhysics(),
