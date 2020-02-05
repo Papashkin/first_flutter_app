@@ -103,13 +103,12 @@ class _MainViewState extends State<MainView> {
       flex: 2,
       child: Padding(
         padding:
-        EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
+        EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
         child: MaterialButton(
-          padding: EdgeInsets.symmetric(vertical: 12.0),
+          padding: EdgeInsets.symmetric(vertical: 8.0),
           onPressed: () => viewModel.addItem(_text),
           child: Text('Add', style: textStyle),
-          color: Colors.green[500],
-        ),
+          color: Colors.green[500]),
       ),
     );
   }
@@ -119,13 +118,12 @@ class _MainViewState extends State<MainView> {
       flex: 2,
       child: Padding(
         padding:
-        EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
+        EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
         child: MaterialButton(
-          padding: EdgeInsets.symmetric(vertical: 12.0),
+          padding: EdgeInsets.symmetric(vertical: 8.0),
           onPressed: () => viewModel.deleteLastItem(),
           child: Text('Delete last', style: textStyle),
-          color: Colors.red[500],
-        ),
+          color: Colors.red[500]),
       ),
     );
   }
@@ -135,9 +133,9 @@ class _MainViewState extends State<MainView> {
       child: ListView.builder(
         padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
         itemBuilder: (context, position) {
-          return ItemCard(item: viewModel.items.elementAt(position), model: viewModel);
+          return ItemCard(item: viewModel.state.items.elementAt(position), model: viewModel);
         },
-        itemCount: viewModel.items.length,
+        itemCount: viewModel.state.items.length,
         physics: ScrollPhysics(),
       ),
     );

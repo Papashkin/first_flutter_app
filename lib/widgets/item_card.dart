@@ -28,13 +28,13 @@ class ItemCard extends StatelessWidget {
               flex: 4,
               child: Padding(
                   padding:
-                      EdgeInsets.symmetric(vertical: 14.0, horizontal: 10.0),
+                      EdgeInsets.all(8.0),
                   child: Text(item.name, style: largeItalicSize))),
           Expanded(
               flex: 1,
               child: Padding(
                   padding:
-                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
+                      EdgeInsets.all(8.0),
                   child: Checkbox(
                     activeColor: Colors.yellow,
                     checkColor: Colors.grey[500],

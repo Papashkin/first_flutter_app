@@ -1,25 +1,40 @@
 import 'package:flutter/widgets.dart';
 
 
+class MainViewState {
+  List<ToDoItem> items;
+
+  MainViewState({this.items});
+}
+
+
 class MainViewModel extends ChangeNotifier {
-  List<ToDoItem> items = [];
+  List<ToDoItem> _items = [];
+  MainViewState _state = MainViewState(items: []);
+
+  MainViewState get state => _state;
 
   void addItem(String text) {
     if (text.isNotEmpty) {
-      items.add(ToDoItem(name: text, isSelected: false, id: items.length + 1));
-      notifyListeners();
+      _items.add(ToDoItem(name: text, isSelected: false, id: _items.length + 1));
+      _setState(MainViewState(items: _items));
     }
   }
 
   void deleteLastItem() {
-    if (items.isNotEmpty) {
-      items.removeLast();
-      notifyListeners();
+    if (_items.isNotEmpty) {
+      _items.removeLast();
+      _setState(MainViewState(items: _items));
     }
   }
 
   void setSelected(bool isSelected, int id) {
-    items.firstWhere((test) => test.id == id).isSelected = isSelected;
+    _items.firstWhere((test) => test.id == id).isSelected = isSelected;
+    _setState(MainViewState(items: _items));
+  }
+
+  _setState(MainViewState newState) {
+    _state = newState;
     notifyListeners();
   }
 
