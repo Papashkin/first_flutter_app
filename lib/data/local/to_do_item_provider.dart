@@ -4,10 +4,10 @@ import 'package:sqflite/sqflite.dart';
 final String tableToDoItem = 'toDoItem';
 
 class ToDoItemProvider {
-  Database db;
+  Database _db;
 
   Future open(String path) async {
-    db = await openDatabase(path, version: 1,
+    _db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
       await db.execute('''
           create table $tableToDoItem (
@@ -18,13 +18,21 @@ class ToDoItemProvider {
     });
   }
 
+  Future prepareDb() async {
+    if (_db.isOpen == false) {
+      await open('to_do_items');
+    }
+  }
+
   Future<ToDoItem> insert(ToDoItem item) async {
-    await db.insert(tableToDoItem, item.toMap());
+    await prepareDb();
+    await _db.insert(tableToDoItem, item.toMap());
     return item;
   }
 
   Future<List<ToDoItem>> getAll() async {
-    var data = await db.query(tableToDoItem);
+    await prepareDb();
+    var data = await _db.query(tableToDoItem);
     if (data.length > 0) {
       return data.map((item) => ToDoItem.fromMap(item)).toList();
     } else {
@@ -32,12 +40,16 @@ class ToDoItemProvider {
     }
   }
 
-  Future delete(int id) async =>
-      await db.delete(tableToDoItem, where: '$columnId = ?', whereArgs: [id]);
+  Future delete(int id) async {
+    await prepareDb();
+    await _db.delete(tableToDoItem, where: '$columnId = ?', whereArgs: [id]);
+  }
 
-  Future update(ToDoItem item) async =>
-      await db.update(tableToDoItem, item.toMap(), where: '$columnId = ?', whereArgs: [item.id]);
+  Future update(ToDoItem item) async {
+    await prepareDb();
+    await _db.update(tableToDoItem, item.toMap(),
+        where: '$columnId = ?', whereArgs: [item.id]);
+  }
 
-  Future close() async => db.close();
-
+  Future close() async => _db.close();
 }

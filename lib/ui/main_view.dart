@@ -1,14 +1,14 @@
-import 'package:first_flutter_app/presentation/main_view_model.dart';
-import 'package:first_flutter_app/widgets/item_card.dart';
+import 'package:first_flutter_app/change_notifier_widget.dart';
+import 'package:first_flutter_app/data/local/to_do_item_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:first_flutter_app/presentation/main_view_model.dart';
+import 'package:first_flutter_app/widgets/item_card.dart';
 import 'package:provider/provider.dart';
 
 class MainView extends StatefulWidget {
   @override
-  State createState() {
-    return _MainViewState();
-  }
+  _MainViewState createState() => _MainViewState();
 }
 
 class _MainViewState extends State<MainView> {
@@ -18,7 +18,6 @@ class _MainViewState extends State<MainView> {
   final mainTextStyle = TextStyle(color: Colors.white, fontSize: 16.0);
   final String hint = "print text here";
   final bool obscureText = false;
-  final MainViewModel viewModel = MainViewModel();
 
   String _text = "";
 
@@ -32,31 +31,31 @@ class _MainViewState extends State<MainView> {
             TextSelection(baseOffset: _text.length, extentOffset: _text.length),
       );
     });
-    viewModel.init();
     super.initState();
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    viewModel.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<MainViewModel>.value(
-      value: viewModel,
-      child: Consumer<MainViewModel>(
-          builder: (context, model, child) => getScaffold(model)),
+    return ChangeNotifierWidget<MainViewModel>(
+      viewModel: MainViewModel(toDoItemProvider: Provider.of<ToDoItemProvider>(context)),
+      builder:(BuildContext context, MainViewModel viewModel, Widget child) => getScaffold(viewModel),
+      onInitWidget: (MainViewModel viewModel) => viewModel.init(),
     );
   }
 
   Widget getScaffold(MainViewModel viewModel) {
     _controller.text = "";
-    return Scaffold(
+    return viewModel.state == null
+    ? Center(child: CircularProgressIndicator())
+    : Scaffold(
       backgroundColor: Colors.grey[700],
-      appBar: appBar('To-Do Flutter app'),
+      appBar: appBar('To-Do list'),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -79,7 +78,7 @@ class _MainViewState extends State<MainView> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                              Icon(Icons.cloud_queue, color: Colors.yellow),
+                              Icon(Icons.terrain, color: Colors.yellow),
                               Padding(padding: EdgeInsets.only(top: 20.0)),
                               Text('There are no items in the list :(',
                                   style: mainTextStyle)
